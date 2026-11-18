@@ -1,0 +1,121 @@
+// Screens/CommonScreens/NotificationScreen.dart
+import 'package:flutter/material.dart';
+import 'package:jivit_jal_2/Utils/AppColors.dart';
+import 'package:jivit_jal_2/Widgets/CommonWidget/NotificationWidget.dart';
+
+class NotificationModel {
+  final String id;
+  final String title;
+  final String message;
+  final String timeAgo;
+
+  NotificationModel({
+    required this.id,
+    required this.title,
+    required this.message,
+    required this.timeAgo,
+  });
+}
+
+class NotificationScreen extends StatefulWidget {
+  const NotificationScreen({super.key});
+
+  @override
+  State<NotificationScreen> createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends State<NotificationScreen> {
+  late List<NotificationModel> _notifications;
+
+  @override
+  void initState() {
+    super.initState();
+    _notifications = [
+      NotificationModel(
+        id: '1',
+        title: 'New Notification',
+        message: 'Lorem Ipsum Lorem Ipsum Lorem Ipsum',
+        timeAgo: '3 Hours ago',
+      ),
+      NotificationModel(
+        id: '2',
+        title: 'New Notification',
+        message: 'Lorem Ipsum Lorem Ipsum Lorem Ipsum',
+        timeAgo: '3 Hours ago',
+      ),
+    ];
+  }
+
+  void _dismissNotification(String id) {
+    setState(() {
+      _notifications.removeWhere((n) => n.id == id);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Notifications',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: _notifications.isEmpty
+          ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.notifications_off_outlined,
+              size: 64,
+              color: AppColors.textSecondary,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No notifications',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      )
+          : ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.only(
+          left: width * 0.04,
+          right: width * 0.04,
+          top: 12,
+          bottom: MediaQuery.of(context).padding.bottom + 12,
+        ),
+        itemCount: _notifications.length,
+        itemBuilder: (context, index) {
+          final notification = _notifications[index];
+          return NotificationWidget(
+            title: notification.title,
+            message: notification.message,
+            timeAgo: notification.timeAgo,
+            onDismiss: () => _dismissNotification(notification.id),
+          );
+        },
+      ),
+    );
+  }
+}
